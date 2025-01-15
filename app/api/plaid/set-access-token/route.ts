@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { client } from "@/plaid/utils/client";
 
+/**
+ * Exchanges a public token for an access token and item ID and saves them to the database.
+ * @param request The incoming request object
+ * @returns A JSON response indicating the success or failure of the operation
+ */
 export async function POST(request: Request): Promise<NextResponse> {
   try {
     const { public_token } = await request.json();
@@ -17,7 +22,11 @@ export async function POST(request: Request): Promise<NextResponse> {
     const { access_token, item_id } = response.data;
 
     // TODO: Save access_token and item_id to the database
-    return NextResponse.json({ access_token, item_id });
+
+    return NextResponse.json(
+      { message: "Access token and item ID saved" },
+      { status: 200 }
+    );
   } catch (error: unknown) {
     console.error("Error exchanging public token:", error);
     const errorMessage =
