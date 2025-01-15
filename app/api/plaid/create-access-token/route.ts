@@ -16,6 +16,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const { access_token, item_id } = response.data;
 
+    // TODO: Save access_token and item_id to the database
     return NextResponse.json({ access_token, item_id });
   } catch (error: unknown) {
     console.error("Error exchanging public token:", error);
