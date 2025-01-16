@@ -1,84 +1,58 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { User } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client";
-import { Session, User } from "@supabase/supabase-js";
 
 interface AuthContextType {
-  session: Session | null;
   user: User | null;
-  signOut: () => void;
+  loading: boolean;
+  signOut: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-
-  // Create the client instance
-  const supabaseClient = createClient();
+  const supabase = createClient();
 
   useEffect(() => {
-    const setData = async () => {
-      try {
-        const {
-          data: { session },
-          error,
-        } = await supabaseClient.auth.getSession();
-        if (error) {
-          console.error("Error fetching session:", error);
-          setLoading(false);
-          return;
-        }
-        setSession(session);
-        setUser(session?.user || null);
-      } catch (err) {
-        console.error("Unexpected error during session retrieval:", err);
-      } finally {
-        setLoading(false);
+    const fetchUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        setUser(null);
+      } else {
+        setUser(data.user);
       }
+      setLoading(false);
     };
 
-    const { data: listener } = supabaseClient.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user || null);
-        setLoading(false);
+    // Listen for auth state changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          setUser(session.user);
+        } else {
+          setUser(null);
+        }
       }
     );
 
-    setData();
+    fetchUser();
 
     return () => {
-      listener?.subscription.unsubscribe();
+      authListener.subscription.unsubscribe();
     };
-  }, [supabaseClient]); // Add supabaseClient as a dependency
+  }, []);
 
-  const value = {
-    session,
-    user,
-    signOut: async () => {
-      try {
-        await supabaseClient.auth.signOut();
-        setUser(null);
-        setSession(null);
-      } catch (error) {
-        console.error("Error during sign out:", error);
-      }
-    },
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    // TODO: Use a custom navigation function or handle it in the component
   };
+
+  const value = { user, loading, signOut };
 
   return (
     <AuthContext.Provider value={value}>
@@ -87,7 +61,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   );
 };
 
-export const useAuth = (): AuthContextType => {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");

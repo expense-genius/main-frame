@@ -1,12 +1,57 @@
 "use client";
 
-import { signInAction } from "@/app/actions";
-import { SubmitButton } from "@/components/submit-button";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
+import { SubmitButton } from "@/components/submit-button";
 
-export default function Login() {
+export default function SignInPage() {
+  const supabase = createClient();
+  const router = useRouter();
+
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const email = e.currentTarget.email.value;
+    const password = e.currentTarget.password.value;
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert("Error signing in: " + error.message);
+    } else {
+      router.push("/dashboard");
+    }
+  };
+
+  // return (
+  //   <div className="flex items-center justify-center min-h-screen">
+  //     <form onSubmit={handleSignIn} className="flex flex-col gap-4 p-4">
+  //       <input
+  //         type="email"
+  //         name="email"
+  //         placeholder="Email"
+  //         className="p-2 border text-yellow-400"
+  //         required
+  //       />
+  //       <input
+  //         type="password"
+  //         name="password"
+  //         placeholder="Password"
+  //         className="p-2 border  text-yellow-400"
+  //         required
+  //       />
+  //       <button type="submit" className="p-2 bg-blue-500 text-white rounded-md">
+  //         Sign In
+  //       </button>
+  //     </form>
+  //   </div>
+  // );
+
   return (
     <main className="relative min-h-screen bg-gradient-to-b from-gray-100 via-gray-50 to-gray-100 text-gray-800 flex items-center justify-center px-6 w-full overflow-hidden">
       <header className="absolute top-0 left-0 w-full flex justify-between items-center p-6 z-50">
@@ -44,7 +89,7 @@ export default function Login() {
             Expense Genius
           </span>
         </h1>
-        <form className="flex flex-col gap-6" action={signInAction}>
+        <form className="flex flex-col gap-6" onSubmit={handleSignIn}>
           <div>
             <Label
               htmlFor="email"
@@ -85,13 +130,11 @@ export default function Login() {
               required
             />
           </div>
-          <SubmitButton
-            formAction={signInAction}
-            pendingText="Signing In..."
+          <button
             className="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-700 text-white font-medium rounded-lg shadow-lg hover:scale-105 transition-transform"
           >
             Sign In
-          </SubmitButton>
+          </button>
           <p className="text-center text-gray-600">
             Don't have an account?{" "}
             <Link

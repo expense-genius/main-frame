@@ -18,28 +18,15 @@ export const metadata = {
   ],
   author: "Expense Genius Team",
   applicationName: "Expense Genius",
-  // icons: {
-  //   icon: "/favicon.ico",
-  //   apple: "/apple-touch-icon.png", // Optional: For iOS devices
-  // },
   openGraph: {
     title: "Expense Genius - Smarter Financial Management",
     description:
       "Empower your financial journey with Expense Genius. Track spending, save smarter, and achieve your goals with AI-powered insights.",
     url: "https://expensegenius.ai",
     siteName: "Expense Genius",
-    // images: [
-    //   {
-    //     url: "/og-image.png", // Replace with your Open Graph image path
-    //     width: 1200,
-    //     height: 630,
-    //     alt: "Expense Genius - Smarter Financial Management",
-    //   },
-    // ],
     type: "website",
   },
 };
-
 
 export default function RootLayout({
   children,
@@ -56,13 +43,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <main className="min-h-screen w-full flex flex-col">
-              {children}
-            </main>
+            <main className="min-h-screen w-full flex flex-col">{children}</main>
           </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
   );
 }
-

@@ -54,7 +54,7 @@ export const signInAction = async (formData: FormData) => {
   }
 
   console.log("Signed in");
-  redirect("/protected");
+  redirect("/dashboard");
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {
