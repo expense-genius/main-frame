@@ -5,10 +5,11 @@ import { redirect } from "next/navigation";
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
+  console.log(user);
 
   if (!user) {
-    // Redirect to sign-in if user is not logged in
-    redirect("/");
+    // refresh the page
+    redirect("/sign-in");
   }
 
   return (

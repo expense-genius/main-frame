@@ -54,9 +54,11 @@ export default function Home() {
       {/* Header */}
       <header className="absolute top-0 left-0 w-full flex justify-between items-center p-6 z-50">
         <div className="flex items-center">
-          <span className="text-xl font-bold text-gray-800">
-            Expense Genius Logo
-          </span>
+          <Link href="/">
+            <span className="text-xl font-bold text-gray-800">
+              Expense Genius Logo
+            </span>
+          </Link>
         </div>
         <div className="flex items-center gap-4 sm:gap-4 sm:flex-row flex-col">
           {user ? (
@@ -93,7 +95,7 @@ export default function Home() {
           )}
         </div>
       </header>
-      
+
       {/* Hero Section */}
       <section className="relative w-full h-screen flex flex-col justify-center items-center text-center px-6 overflow-hidden">
         {/* Glowing Elements */}

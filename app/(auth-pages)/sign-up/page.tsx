@@ -9,6 +9,15 @@ import Link from "next/link";
 export default function Signup() {
   return (
     <main className="relative min-h-screen bg-gradient-to-b from-gray-100 via-gray-50 to-gray-100 text-gray-800 flex items-center justify-center px-6 w-full overflow-hidden">
+      <header className="absolute top-0 left-0 w-full flex justify-between items-center p-6 z-50">
+        <div className="flex items-center">
+          <Link href="/">
+            <span className="text-xl font-bold text-gray-800">
+              Expense Genius Logo
+            </span>
+          </Link>
+        </div>
+      </header>
       {/* Background Visuals */}
       <div className="absolute inset-0 z-0">
         {/* Floating Circle */}
