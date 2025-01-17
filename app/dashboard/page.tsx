@@ -1,35 +1,22 @@
 "use client";
 
 import { useAuth } from "@/contexts/authContext";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import RedirectHandler from "@/components/common/RedirectHandler";
 
-export default function ProtectedPage() {
-  const { user, signOut } = useAuth();
-  const router = useRouter();
+export default function DashboardPage() {
+  const { user, signOut, signingOut } = useAuth();
 
-  useEffect(() => {
-    if (!user) {
-      console.log("User not found, redirecting to sign-in page");
-      router.push("/sign-in");
-    }
-  }, [user, router]);
-
-  if (!user) {
-    return <div>Loading...</div>;
+  if (!user && !signingOut) {
+    // Show redirect handler if user is not authenticated
+    // and not in the process of signing out
+    return (
+      <RedirectHandler
+        redirectTo="/sign-in"
+        redirectPageName="the sign-in page"
+      />
+    );
   }
 
-  // return (
-  //   <div className="flex flex-col items-center justify-center min-h-screen">
-  //     <h1 className="text-3xl font-bold">Welcome, {user.email}!</h1>
-  //     <button
-  //       onClick={signOut}
-  //       className="mt-4 px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-  //     >
-  //       Sign Out
-  //     </button>
-  //   </div>
-  // );
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900">
       <div className="container mx-auto p-6">
@@ -48,7 +35,7 @@ export default function ProtectedPage() {
           <div className="md:col-span-2 bg-white p-6 shadow-md rounded-lg">
             <h2 className="text-2xl font-semibold mb-4">Welcome</h2>
             <p className="text-lg text-gray-700">
-              Your email: <span className="font-medium">{user.email}</span>
+              Your email: <span className="font-medium">{user?.email}</span>
             </p>
           </div>
 
