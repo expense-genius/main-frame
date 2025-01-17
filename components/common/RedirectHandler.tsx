@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import EGLogo from "@/components/common/EGLogo";
 
 interface RedirectHandlerProps {
