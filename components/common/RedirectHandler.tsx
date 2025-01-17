@@ -44,14 +44,14 @@ const RedirectHandler: React.FC<RedirectHandlerProps> = ({
   }, [redirectTo, countdownDuration, router]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-800">
+    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-800 overflow-hidden relative">
       {/* The header with the logo */}
       <header className="absolute top-0 left-0 w-full flex justify-between items-center p-6 z-50">
         <EGLogo />
       </header>
 
       {/* Glowing Elements */}
-      <div className="absolute -top-10 left-10 w-72 h-72 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-3xl opacity-50 z-0"></div>
+      <div className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-3xl opacity-50 z-0"></div>
       <div className="absolute bottom-10 -right-10 w-96 h-96 bg-gradient-to-r from-pink-500 to-red-500 rounded-full blur-3xl opacity-50 z-0"></div>
 
       {/* Redirect Message */}
@@ -74,7 +74,7 @@ const RedirectHandler: React.FC<RedirectHandlerProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 
