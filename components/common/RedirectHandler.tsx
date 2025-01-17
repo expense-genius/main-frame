@@ -11,6 +11,14 @@ interface RedirectHandlerProps {
   countdownDuration?: number; // Default is 7 seconds
 }
 
+/**
+ * Creates a redirect handler component that redirects the user to a specified page after a countdown display.
+ * @param redirectTo - The page to redirect to (default is the "/" homepage)
+ * @param redirectMessage - The message to display to the user (default is "Authentication required beyond this point")
+ * @param redirectPageName - The name of the page to redirect to (default is "the homepage")
+ * @param countdownDuration - The duration of the countdown in seconds (default is 7 seconds)
+ * @returns
+ */
 const RedirectHandler: React.FC<RedirectHandlerProps> = ({
   redirectTo = "/",
   redirectMessage = "Authentication required beyond this point",
