@@ -19,3 +19,22 @@ export const fetchLinkToken = async () => {
     return null;
   }
 };
+
+/**
+ * Calls the set-access-token API route to exchange a public token for
+ * an access token and item id and sets it in the database.
+ * @param public_token The public token to exchange for an access token
+ */
+export const exchangeAndSetPublicToken = async (public_token: string) => {
+  try {
+    const response = await fetch("/api/plaid/set-access-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ public_token }),
+    });
+
+    if (!response.ok) throw new Error("Failed to exchange public token");
+  } catch (err) {
+    console.error("Error exchanging public token:", err);
+  }
+};
