@@ -3,19 +3,26 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  signingOut: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  // Initialize states for user, loading, and signing out
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [signingOut, setSigningOut] = useState(false);
+
+  // Create a Supabase client and Next.js router
   const supabase = createClient();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -47,12 +54,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signOut = async () => {
+    setSigningOut(true);
     await supabase.auth.signOut();
-    setUser(null);
-    // TODO: Use a custom navigation function or handle it in the component
+
+    // Redirect to the homepage
+    router.push("/");
+
+    // Reset the user and signing out state
+    setTimeout(() => {
+      setUser(null);
+      setSigningOut(false);
+    }, 100);
   };
 
-  const value = { user, loading, signOut };
+  const value = { user, loading, signOut, signingOut };
 
   return (
     <AuthContext.Provider value={value}>
