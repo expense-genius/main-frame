@@ -1,9 +1,31 @@
 import { ThemeProvider } from "next-themes";
+import { AuthProvider } from "@/contexts/authContext";
 import "./globals.css";
 
 export const metadata = {
-  title: "My App",
-  description: "A fresh Next.js app",
+  title: "Expense Genius - Smarter Financial Management",
+  description:
+    "Take control of your finances with Expense Genius. Track expenses, analyze spending patterns, and get AI-powered insights to achieve your financial goals effortlessly.",
+  keywords: [
+    "Expense Genius",
+    "finance app",
+    "expense tracker",
+    "AI-powered finance",
+    "financial management",
+    "budgeting app",
+    "personal finance",
+    "money management",
+  ],
+  author: "Expense Genius Team",
+  applicationName: "Expense Genius",
+  openGraph: {
+    title: "Expense Genius - Smarter Financial Management",
+    description:
+      "Empower your financial journey with Expense Genius. Track spending, save smarter, and achieve your goals with AI-powered insights.",
+    url: "https://expensegenius.ai",
+    siteName: "Expense Genius",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -12,18 +34,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="bg-background text-foreground">
+    <html lang="en" suppressHydrationWarning className="w-full h-full">
+      <body className="bg-background text-foreground w-full h-full m-0 p-0">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-screen flex flex-col items-center">
-            {/* Page Content */}
-            <div className="flex flex-col gap-10 max-w-5xl p-5">{children}</div>
-          </main>
+          <AuthProvider>
+            <main className="min-h-screen w-full flex flex-col">{children}</main>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
