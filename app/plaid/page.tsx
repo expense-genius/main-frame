@@ -4,11 +4,10 @@ import { useEffect, useState } from "react";
 import { usePlaidLink } from "react-plaid-link";
 
 const TestPlaidPage = () => {
+  const [data, setData] = useState<any>(null);
   const [linkToken, setLinkToken] = useState<string | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>("access-sandbox-fa6ba2a8-cead-4817-b41d-74b8e5b0b4f5");
-  const [accounts, setAccounts] = useState([]);
-  const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState<string | null>(null);
+  const [accounts, setAccounts] = useState<any[]>([]);
 
   // Fetch the link token for initializing Plaid Link
   const fetchLinkToken = async () => {
@@ -29,30 +28,23 @@ const TestPlaidPage = () => {
     }
   };
 
-  // Fetch accounts and paginated transactions using the access token
-  const fetchAccountsAndTransactions = async () => {
+  // Fetch accounts data from the server
+  const fetchAccounts = async () => {
     try {
-      if (!accessToken) {
-        setError("Access token not available. Please try again.");
-        return;
-      }
-
-      const response = await fetch("/api/plaid/accounts-transactions", {
-        method: "POST",
+      setError(null);
+      const response = await fetch("/api/plaid/get-accounts", {
+        method: "GET",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ access_token: accessToken }),
       });
 
-      if (!response.ok)
-        throw new Error("Failed to fetch accounts/transactions");
+      if (!response.ok) throw new Error("Failed to fetch accounts data");
 
       const data = await response.json();
-      console.log("Data:", data); // Debugging log
       setAccounts(data.accounts || []);
-      setTransactions(data.transactions || []);
+      setData(data);
     } catch (err) {
-      console.error("Error fetching accounts and transactions:", err);
-      setError("Failed to fetch accounts and transactions. Please try again.");
+      console.error("Error fetching accounts data:", err);
+      setError("Failed to fetch accounts data. Please try again.");
     }
   };
 
@@ -67,15 +59,15 @@ const TestPlaidPage = () => {
         });
 
         const data = await response.json();
-        if (!response.ok || !data.access_token) {
-          throw new Error(data.error || "Access token not returned");
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to save access token.");
         }
 
-        setAccessToken(data.access_token); // Update state with access token
-        await fetchAccountsAndTransactions(); // Fetch accounts and transactions
+        console.log("Access token saved successfully.");
+        fetchAccounts(); // Fetch accounts after saving the access token
       } catch (err) {
-        console.error("Error exchanging public token:", err);
-        setError("Failed to exchange public token. Please try again.");
+        console.error("Error saving access token:", err);
+        setError("Failed to save access token. Please try again.");
       }
     },
     onExit: (err) => {
@@ -93,9 +85,14 @@ const TestPlaidPage = () => {
     }
   }, [linkToken, ready, open]);
 
+  // Fetch accounts on load
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Plaid Link Test</h1>
+      <h1 className="text-2xl font-bold mb-4">Plaid Link and Accounts</h1>
       {error && <p className="text-red-500 mb-2">{error}</p>}
       <button
         onClick={fetchLinkToken}
@@ -107,37 +104,31 @@ const TestPlaidPage = () => {
         Connect
       </button>
 
-      {accounts.length > 0 && (
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-4">Accounts</h2>
-          <ul>
-            {accounts.map((account: any, index: number) => (
-              <div
-                key={index}
-                className="mb-4 p-4 border border-gray-300 rounded-md"
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-4">Accounts</h2>
+        {accounts.length === 0 ? (
+          <p>No accounts available. Connect your account to get started.</p>
+        ) : (
+          <ul className="space-y-4">
+            <div>{accounts.length}</div>
+            {accounts.map((account) => (
+              <li
+                key={account.account_id}
+                className="p-4 border rounded-lg shadow"
               >
-                <pre className="bg-gray-100 p-2 rounded-md text-sm">
+                <pre className="bg-gray-100 p-4 rounded-lg overflow-auto">
                   {JSON.stringify(account, null, 2)}
                 </pre>
-              </div>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {transactions.length > 0 && (
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-4">Transactions</h2>
-          <ul>
-            {transactions.map((transaction: any, index: number) => (
-              <li key={index} className="mb-2">
-                {transaction.name} - {transaction.amount}{" "}
-                {transaction.iso_currency_code}
               </li>
             ))}
           </ul>
-        </div>
-      )}
+        )}
+        {data && (
+          <pre className="bg-gray-100 p-4 rounded-lg mt-4 overflow-auto">
+            {JSON.stringify(data, null, 2)}
+          </pre>
+        )}
+      </div>
     </div>
   );
 };

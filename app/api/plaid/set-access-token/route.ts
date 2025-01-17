@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { client } from "@/plaid/utils/client";
+import { createClient } from "@/utils/supabase/server";
 
 /**
  * Exchanges a public token for an access token and item ID and saves them to the database.
@@ -17,14 +18,36 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
+    // Exchange public token for access token and item ID
     const response = await client.itemPublicTokenExchange({ public_token });
 
     const { access_token, item_id } = response.data;
 
-    // TODO: Save access_token and item_id to the database
+    if (!access_token || !item_id) {
+      return NextResponse.json(
+        { error: "Access token and item ID not found in response" },
+        { status: 500 }
+      );
+    }
+
+    // Connect to Supabase
+    const supabase = await createClient();
+
+    // Insert data into the `access_tokens` table
+    const { data, error: supabaseError } = await supabase
+      .from("access_tokens")
+      .insert([{ plaid_token: access_token, item_id }]) // Map to your table schema
+      .single();
+
+    if (supabaseError) {
+      return NextResponse.json(
+        { error: supabaseError.message },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
-      { message: "Access token and item ID saved" },
+      { message: "Access token and item ID saved successfully", data },
       { status: 200 }
     );
   } catch (error: unknown) {
