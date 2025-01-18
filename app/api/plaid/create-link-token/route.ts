@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { plaidClient } from "@/plaid/utils/client";
+import { plaidClient } from "@/utils/plaid/client";
 import {
   PLAID_CLIENT_NAME,
   PLAID_CLIENT_ID,
   PLAID_PRODUCTS,
   PLAID_COUNTRY_CODES,
-} from "@/plaid/config";
+} from "@/utils/plaid/config";
 import { Products, CountryCode } from "plaid";
 
 /**
