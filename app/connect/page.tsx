@@ -29,7 +29,7 @@ const ConnectBanksPage = () => {
       console.log(`Finished with link! ${JSON.stringify(metadata)}`);
       await exchangeAndSetPublicToken(public_token);
 
-      // Redirect to the dashboard
+      // Redirect to the dashboard (TODO: Ask if they want to connect another bank else redirect to dashboard)
       router.push("/dashboard");
     },
     onExit: (error, metadata) => {
