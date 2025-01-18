@@ -1,15 +1,18 @@
 import { AccountBase, Item } from "plaid";
-import { supabase } from "@/utils/supabase/supabaseClient";
+import { createClient } from "@/utils/supabase/server";
 
 /**
  * Fetches the user ID of the authenticated user using the Supabase client
  * @returns The user ID of the authenticated user
  */
 export const getUserId = async () => {
+  const supabase = await createClient();
+
   const { data, error } = await supabase.auth.getUser();
   if (error || !data?.user?.id) {
     throw new Error("User not found");
   }
+
   return data.user.id;
 };
 
@@ -21,6 +24,8 @@ export const getUserId = async () => {
  * @param institutionName The institution name for the Plaid item
  */
 export const storePlaidItem = async (accessToken: string, item: any) => {
+  const supabase = await createClient();
+
   // Fetch the authenticated user
   const userId = await getUserId();
 
@@ -28,7 +33,7 @@ export const storePlaidItem = async (accessToken: string, item: any) => {
   const Item = item;
 
   // Insert the Plaid item into the database
-  const { data, error } = await supabase.from("plaid_items").insert([
+  const { data, error } = await supabase.from("items").insert([
     {
       user_id: userId,
       access_token: accessToken,
@@ -55,6 +60,8 @@ export const storePlaidAccounts = async (
   accounts: AccountBase[],
   item: Item
 ) => {
+  const supabase = await createClient();
+
   // Fetch the authenticated user
   const userId = await getUserId();
 
