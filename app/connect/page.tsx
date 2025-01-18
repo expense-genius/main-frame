@@ -5,10 +5,12 @@ import { PlaidLinkOptions, usePlaidLink } from "react-plaid-link";
 import { useAuth } from "@/contexts/authContext";
 import { EGLogo, RedirectHandler } from "@/components/common";
 import { fetchLinkToken, exchangeAndSetPublicToken } from "./logic";
+import { useRouter } from "next/navigation";
 
 const ConnectBanksPage = () => {
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const { user } = useAuth();
+  const router = useRouter();
 
   if (!user) {
     return <RedirectHandler />;
@@ -26,6 +28,9 @@ const ConnectBanksPage = () => {
     onSuccess: async (public_token, metadata) => {
       console.log(`Finished with link! ${JSON.stringify(metadata)}`);
       await exchangeAndSetPublicToken(public_token);
+
+      // Redirect to the dashboard
+      router.push("/dashboard");
     },
     onExit: (error, metadata) => {
       console.log(
