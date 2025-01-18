@@ -112,4 +112,53 @@ export const fetchAndStoreAccounts = async (
   }
 };
 
+/**
+ * Syncs transactions for a Plaid item using the cursor for incremental updates.
+ * @param accessToken The access token for the Plaid item.
+ * @param itemId The item ID for the Plaid item.
+ * @returns A success message.
+ */
+export const syncTransactions = async (
+  accessToken: string,
+  itemId: string
+): Promise<{ message: string }> => {
+  const supabase = await createClient();
+
+  let cursor = await supabase
+    .from("items")
+    .select("cursor")
+    .eq("item_id", itemId)
+    .single()
+    .then((res) => res.data?.cursor || null);
+
+  let added: Transaction[] = [];
+  let modified: Transaction[] = [];
+  let removed: string[] = [];
+  let hasMore = true;
+
+  try {
+    while (hasMore) {
+      const response = await plaidClient.transactionsSync({
+        access_token: accessToken,
+        cursor,
+      });
+      const data = response.data;
+
+      added = added.concat(data.added);
+      modified = modified.concat(data.modified);
+      removed = removed.concat(data.removed.map((t) => t.transaction_id));
+
+      hasMore = data.has_more;
+      cursor = data.next_cursor;
+    }
+
+    await applyTransactionUpdates(itemId, added, modified, removed, cursor);
+
+    return { message: "Transactions synced successfully" };
+  } catch (error) {
+    console.error("Error syncing transactions:", error);
+    throw new Error("Failed to sync transactions");
+  }
+};
+
 
