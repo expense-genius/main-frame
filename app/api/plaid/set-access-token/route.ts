@@ -35,19 +35,14 @@ export async function POST(request: Request): Promise<NextResponse> {
     const itemResponse = await plaidClient.itemGet(itemRequest);
 
     // Any since Plaid API type definitions don't include the institution_name field
-    const { item } = itemResponse.data as any;
+    const { item } = itemResponse.data;
 
     if (!item) {
       return NextResponse.json({ message: "Item not found" }, { status: 404 });
     }
 
     // Save the item details in the database
-    await storePlaidItem(
-      accessToken,
-      item.item_id,
-      item.institution_id || "",
-      item.institution_name || ""
-    );
+    await storePlaidItem(accessToken, item);
 
     return NextResponse.json(
       { message: "Successfully saved Plaid Item!" },

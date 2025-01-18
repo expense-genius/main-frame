@@ -20,22 +20,29 @@ export const getUserId = async () => {
  * @param institutionId The institution ID for the Plaid item
  * @param institutionName The institution name for the Plaid item
  */
-export const storePlaidItem = async (
-  accessToken: string,
-  itemId: string,
-  institutionId: string,
-  institutionName: string | null
-) => {
+export const storePlaidItem = async (accessToken: string, item: any) => {
+  // Fetch the authenticated user
   const userId = await getUserId();
-  return supabase.from("plaid_items").insert([
+
+  // Cast the item to any to access the institution name
+  const Item = item;
+
+  // Insert the Plaid item into the database
+  const { data, error } = await supabase.from("plaid_items").insert([
     {
       user_id: userId,
       access_token: accessToken,
-      item_id: itemId,
-      institution_id: institutionId,
-      institution_name: institutionName,
+      item_id: Item.item_id,
+      institution_id: Item.item_id,
+      institution_name: Item.institution_name,
     },
   ]);
+
+  if (error) {
+    throw new Error(`Error storing Plaid item: ${error.message}`);
+  }
+
+  return { message: "Successfully stored Plaid item" };
 };
 
 /**
@@ -79,5 +86,5 @@ export const storePlaidAccounts = async (
     throw new Error(`Error inserting accounts: ${insertError.message}`);
   }
 
-  return { message: "Successfully stored accounts", data: insertResult };
+  return { message: "Successfully stored accounts" };
 };
