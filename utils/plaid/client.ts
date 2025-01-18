@@ -1,5 +1,5 @@
 import { Configuration, PlaidApi, PlaidEnvironments } from "plaid";
-import { PLAID_CLIENT_ID, PLAID_SECRET, PLAID_ENV } from "@/plaid/config";
+import { PLAID_CLIENT_ID, PLAID_SECRET, PLAID_ENV } from "@/utils/plaid/config";
 
 /**
  * Configures the Plaid API client with the Plaid environment and credentials.

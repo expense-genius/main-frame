@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { plaidClient } from "@/plaid/utils/client";
+import { plaidClient } from "@/utils/plaid/client";
 import { storePlaidItem } from "@/utils/supabase/database";
 import { ItemGetRequest } from "plaid";
 
