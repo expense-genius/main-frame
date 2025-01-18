@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { client } from "@/plaid/utils/client";
+import { plaidClient } from "@/plaid/utils/client";
+import { storePlaidItem } from "@/utils/supabase/database";
+import { ItemGetRequest } from "plaid";
 
 /**
  * Exchanges a public token for an access token and item ID and saves them to the database.
@@ -17,20 +19,44 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
-    const response = await client.itemPublicTokenExchange({ public_token });
+    // Exchange the public token for an access token
+    const exchangeResponse = await plaidClient.itemPublicTokenExchange({
+      public_token,
+    });
 
-    const { access_token, item_id } = response.data;
+    const { access_token: accessToken } = exchangeResponse.data;
 
-    // TODO: Save access_token and item_id to the database
+    // Create the Plaid request for item details
+    const itemRequest: ItemGetRequest = {
+      access_token: accessToken,
+    };
+
+    // Fetch the item information from Plaid
+    const itemResponse = await plaidClient.itemGet(itemRequest);
+
+    // Any since Plaid API type definitions don't include the institution_name field
+    const { item } = itemResponse.data as any;
+
+    if (!item) {
+      return NextResponse.json({ message: "Item not found" }, { status: 404 });
+    }
+
+    // Save the item details in the database
+    await storePlaidItem(
+      accessToken,
+      item.item_id,
+      item.institution_id || "",
+      item.institution_name || ""
+    );
 
     return NextResponse.json(
-      { message: "Access token and item ID saved" },
+      { message: "Successfully saved Plaid Item!" },
       { status: 200 }
     );
   } catch (error: unknown) {
     console.error("Error exchanging public token:", error);
     const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
+      error instanceof Error ? error.message : "An unknown error occurred";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

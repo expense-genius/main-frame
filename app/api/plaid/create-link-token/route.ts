@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { client } from "@/plaid/utils/client";
+import { plaidClient } from "@/plaid/utils/client";
 import {
   PLAID_CLIENT_NAME,
   PLAID_CLIENT_ID,
@@ -12,7 +12,7 @@ import { Products, CountryCode } from "plaid";
  * Creates a configuration object for the Plaid Link token creation endpoint.
  * @returns A Plaid Link token that can be used to initialize the Plaid Link widget.
  */
-export async function POST(): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
   try {
     // Validate and cast Plaid products
     const validProducts = PLAID_PRODUCTS.filter((product) =>
@@ -35,7 +35,7 @@ export async function POST(): Promise<NextResponse> {
     };
 
     // Create a link token using the Plaid client
-    const response = await client.linkTokenCreate(configs);
+    const response = await plaidClient.linkTokenCreate(configs);
 
     return NextResponse.json(response.data);
   } catch (error: unknown) {
