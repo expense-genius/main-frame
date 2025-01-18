@@ -225,3 +225,34 @@ export const applyTransactionUpdates = async (
     throw new Error(`Error updating cursor: ${cursorError.message}`);
   }
 };
+
+export const fetchAccounts = async () => {
+  const supabase = await createClient();
+  const userId = await getUserId();
+
+  const { data, error } = await supabase
+    .from("accounts")
+    .select("*")
+    .eq("user_id", userId);
+
+  if (error) {
+    throw new Error(`Error fetching accounts: ${error.message}`);
+  }
+
+  return data;
+};
+
+export const fetchTransactions = async () => {
+  const supabase = await createClient();
+  const userId = await getUserId();
+
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("*")
+    .eq("user_id", userId);
+
+  if (error) {
+    throw new Error(`Error fetching transactions: ${error.message}`);
+  }
+  return data;
+};
