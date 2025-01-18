@@ -27,7 +27,7 @@ export const fetchLinkToken = async () => {
  */
 export const exchangeAndSetPublicToken = async (public_token: string) => {
   try {
-    const response = await fetch("/api/plaid/set-access-token", {
+    const response = await fetch("/api/plaid/save-and-sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ public_token }),
