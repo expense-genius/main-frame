@@ -63,7 +63,7 @@ const RedirectHandler: React.FC<RedirectHandlerProps> = ({
           Redirecting to{" "}
           <span className="font-semibold">{redirectPageName}</span> in{" "}
           <span className="font-semibold text-blue-500">{countdown}</span>{" "}
-          {countdown === 1 ? "second" : "seconds"}.
+          {countdown <= 1 ? "second" : "seconds"}.
         </h2>
         <div className="flex flex-col sm:flex-row sm:justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
           <button
