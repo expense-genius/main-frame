@@ -161,4 +161,67 @@ export const syncTransactions = async (
   }
 };
 
+/**
+ * Applies transaction updates (added, modified, removed) to the database.
+ * @param itemId The item ID for the Plaid item.
+ * @param added The newly added transactions.
+ * @param modified The modified transactions.
+ * @param removed The IDs of removed transactions.
+ * @param cursor The updated cursor for transaction sync.
+ */
+export const applyTransactionUpdates = async (
+  itemId: string,
+  added: Transaction[],
+  modified: Transaction[],
+  removed: string[],
+  cursor: string
+): Promise<void> => {
+  const supabase = await createClient();
+  const userId = await getUserId();
 
+  const transactionUpserts = [...added, ...modified].map((transaction) => ({
+    user_id: userId,
+    account_id: transaction.account_id,
+    transaction_id: transaction.transaction_id,
+    amount: transaction.amount,
+    authorized_datetime: transaction.authorized_datetime,
+    datetime: transaction.datetime,
+    personal_finance_category_primary:
+      transaction.personal_finance_category?.primary,
+    personal_finance_category_detailed:
+      transaction.personal_finance_category?.detailed,
+    name: transaction.name,
+    merchant_name: transaction.merchant_name,
+    payment_channel: transaction.payment_channel,
+    currency: transaction.iso_currency_code,
+    pending: transaction.pending,
+  }));
+
+  const { error: upsertError } = await supabase
+    .from("transactions")
+    .upsert(transactionUpserts, { onConflict: "transaction_id" });
+
+  if (upsertError) {
+    throw new Error(`Error upserting transactions: ${upsertError.message}`);
+  }
+
+  if (removed.length > 0) {
+    const { error: deleteError } = await supabase
+      .from("transactions")
+      .delete()
+      .in("transaction_id", removed);
+
+    if (deleteError) {
+      throw new Error(`Error deleting transactions: ${deleteError.message}`);
+    }
+  }
+
+  const { error: cursorError } = await supabase
+    .from("items")
+    .update({ cursor })
+    .eq("item_id", itemId);
+
+  if (cursorError) {
+    throw new Error(`Error updating cursor: ${cursorError.message}`);
+  }
+};
