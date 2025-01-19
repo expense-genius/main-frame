@@ -20,11 +20,13 @@ export default function DashboardPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
-    if (user && !signingOut) {
+    if (user && !signingOut && !isLoggingOut) {
       setLoading(true);
-      console.log("Fetching accounts and transactions..."); // Log
+      console.log("Fetching accounts and transactions...");
+
       Promise.all([fetchAccounts(), fetchTransactions()])
         .then(([accountsData, transactionsData]) => {
           setAccounts(accountsData || []);
@@ -35,10 +37,14 @@ export default function DashboardPage() {
         })
         .finally(() => setLoading(false));
     }
-    console.log(fetchTransactions());
-  }, [user]);
+  }, [user, signingOut, isLoggingOut]);
 
-  if (!user && !signingOut) {
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    await signOut();
+  };
+
+  if (!user && !isLoggingOut) {
     return (
       <RedirectHandler
         redirectTo="/sign-in"
@@ -53,7 +59,7 @@ export default function DashboardPage() {
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <button
-            onClick={signOut}
+            onClick={handleLogout}
             className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
           >
             Logout
