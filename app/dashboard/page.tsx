@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { useAuth } from "@/contexts/authContext";
-import RedirectHandler from "@/components/common/RedirectHandler";
+import { RedirectHandler, BasicButton } from "@/components/common";
 import { fetchAccounts, fetchTransactions } from "./logic";
 import { Transaction } from "plaid";
 
@@ -58,12 +58,12 @@ export default function DashboardPage() {
       <div className="container mx-auto p-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <button
+          <BasicButton
+            name="Log Out"
             onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
-          >
-            Logout
-          </button>
+            color="red"
+            additionalClassName="text-white"
+          />
         </div>
 
         <div className="mt-8 bg-white p-6 shadow-md rounded-lg">

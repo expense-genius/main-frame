@@ -4,12 +4,14 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { gsap } from "gsap";
-import Loader from "@/components/Loader";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
+import { BasicButton, TruckAnimation } from "@/components/common";
 
 export default function Home() {
   const { user } = useAuth();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const router = useRouter();
 
   const toggle = (index: number) => {
     setOpenIndex(index === openIndex ? null : index);
@@ -62,35 +64,24 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-4 sm:gap-4 sm:flex-row flex-col">
           {user ? (
-            <Link href="/dashboard">
-              <motion.button
-                className="w-28 h-10 border-2 border-gray-800 text-gray-800 font-medium rounded-lg hover:bg-gray-800 hover:text-white transition-colors duration-300 z-50"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Dashboard
-              </motion.button>
-            </Link>
+            <BasicButton
+              name="Dashboard"
+              onClick={() => router.push("/dashboard")}
+              color="gray"
+              variations={800}
+            />
           ) : (
             <>
-              <Link href="/sign-in">
-                <motion.button
-                  className="w-28 h-10 border-2 border-gray-800 text-gray-800 font-medium rounded-lg hover:bg-gray-800 hover:text-white transition-colors duration-300 z-50"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Sign In
-                </motion.button>
-              </Link>
-              <Link href="/sign-up">
-                <motion.button
-                  className="w-28 h-10 border-2 border-blue-500 text-blue-500 font-medium rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-300 z-50"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Sign Up
-                </motion.button>
-              </Link>
+              <BasicButton
+                name="Sign In"
+                onClick={() => router.push("/sign-in")}
+                color="gray"
+                variations={800}
+              />
+              <BasicButton
+                name="Sign Up"
+                onClick={() => router.push("/sign-up")}
+              />
             </>
           )}
         </div>
@@ -141,7 +132,7 @@ export default function Home() {
           </Link>
         </motion.div>
         <div className="absolute bottom-3 left-5 flex justify-center items-center gap-2 z-10">
-          <Loader />
+          <TruckAnimation />
         </div>
       </section>
       {/* Features Section */}
