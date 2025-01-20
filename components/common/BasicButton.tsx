@@ -46,6 +46,7 @@ type BasicButtonProps = {
   variations?: ColorVariations;
   dimensions?: { height: number; width: number };
   zIndex?: number;
+  additionalClassName?: string;
   onClick: () => void;
 };
 
@@ -55,6 +56,7 @@ const BasicButton: React.FC<BasicButtonProps> = ({
   variations = 500,
   dimensions = { height: 10, width: 28 },
   zIndex = 50,
+  additionalClassName = "",
   onClick,
 }) => {
   // Dimensions
@@ -62,7 +64,7 @@ const BasicButton: React.FC<BasicButtonProps> = ({
   const width: number = dimensions.width;
 
   // Button class name
-  const buttonClass = `w-${width} h-${height} border-2 border-${color}-${variations} text-${color}-${variations} font-medium rounded-lg hover:bg-${color}-${variations} hover:text-white transition-colors duration-300 z-${zIndex}`;
+  const buttonClass = `${additionalClassName} w-${width} h-${height} border-2 border-${color}-${variations} text-${color}-${variations} font-medium rounded-lg hover:bg-${color}-${variations} hover:text-white transition-colors duration-300 z-${zIndex}`;
 
   return (
     <motion.button
