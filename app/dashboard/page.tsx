@@ -61,8 +61,7 @@ export default function DashboardPage() {
           <BasicButton
             name="Log Out"
             onClick={handleLogout}
-            color="red"
-            additionalClassName="text-white"
+            theme="danger"
           />
         </div>
 
