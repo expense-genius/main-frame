@@ -2,72 +2,50 @@
 
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { emailSignIn } from '@/utils/supabase/database';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SubmitButton } from '@/components/submit-button';
 import { useState } from 'react';
-import { useAuth } from '@/contexts/authContext';
 
 export default function SignInPage() {
 	const [pending, setPending] = useState(false);
 	const supabase = createClient();
 	const router = useRouter();
-	const { fetchUser } = useAuth();
-
-	// const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
-	// 	e.preventDefault();
-	// 	setPending(true);
-
-	// 	const formData = new FormData(e.currentTarget);
-	// 	const email = formData.get('email') as string;
-	// 	const password = formData.get('password') as string;
-
-	// 	try {
-	// 		const response = await fetch('/api/auth/sign-in', {
-	// 			method: 'POST',
-	// 			headers: {
-	// 				'Content-Type': 'application/json',
-	// 			},
-	// 			body: JSON.stringify({ email, password }),
-	// 		});
-
-	// 		if (!response.ok) throw new Error('Failed to sign in');
-
-	// 		await fetchUser();
-	// 		router.push('/dashboard');
-	// 	} catch (error) {
-	// 		if (error instanceof Error) {
-	// 			alert(error.message);
-	// 		} else {
-	// 			alert('An unknown error occurred');
-	// 		}
-	// 	} finally {
-	// 		setPending(false);
-	// 	}
-	// };
 
 	const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log('Form submitted');
 		setPending(true);
-		const email = e.currentTarget.email.value;
-		const password = e.currentTarget.password.value;
-		console.log('Signing in with email:', email);
 
-		const { error } = await supabase.auth.signInWithPassword({
-			email,
-			password,
-		});
+		const formData = new FormData(e.currentTarget);
+		const email = formData.get('email') as string;
+		const password = formData.get('password') as string;
 
-		if (error) {
-			alert('Error signing in: ' + error.message);
-			setPending(false);
-		} else {
-			console.log('User signed in');
-			// console.log(user);
+		try {
+			const response = await fetch('/api/auth/sign-in', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email, password }),
+			});
+
+			if (!response.ok) throw new Error('Failed to sign in');
+
+			const data = await response.json();
+
+			if (data.session) {
+				await supabase.auth.setSession(data.session);
+			}
+
 			router.push('/dashboard');
+		} catch (error) {
+			if (error instanceof Error) {
+				alert(error.message);
+			} else {
+				alert('An unknown error occurred');
+			}
+			setPending(false);
 		}
 	};
 
