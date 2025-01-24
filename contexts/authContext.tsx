@@ -9,6 +9,7 @@ interface AuthContextType {
 	user: User | null;
 	loading: boolean;
 	signIn: (email: string, password: string, redirectTo: string) => Promise<void>;
+	signup: (formData: FormData) => Promise<void>;
 	signOut: () => Promise<void>;
 	signingOut: boolean;
 }
@@ -62,6 +63,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	};
 
+	const signup = async (formData: FormData) => {
+		const email = formData.get('email')?.toString();
+		const password = formData.get('password')?.toString();
+		const firstName = formData.get('firstName')?.toString();
+		const lastName = formData.get('lastName')?.toString();
+
+		if (!email || !password) {
+			return;
+		}
+
+		const { data, error } = await supabase.auth.signUp({
+			email,
+			password,
+			options: {
+				data: { firstName, lastName },
+			},
+		});
+		if (error) {
+			throw error;
+		}
+		if (data?.user) {
+			setUser(data.user);
+			router.push('/dashboard');
+		}
+	};
+
 	const signOut = async () => {
 		setSigningOut(true);
 		await supabase.auth.signOut();
@@ -76,7 +103,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 		}, 100);
 	};
 
-	const value = { user, loading, signOut, signIn, signingOut };
+	const value = { user, loading, signOut, signIn, signup, signingOut };
 
 	return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 };
