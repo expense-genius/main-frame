@@ -1,50 +1,37 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SubmitButton } from '@/components/submit-button';
 import { useState } from 'react';
+import { useAuth } from '@/contexts/authContext';
 
 export default function SignInPage() {
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
 	const [pending, setPending] = useState(false);
-	const supabase = createClient();
-	const router = useRouter();
 
+	// Use the sign-in function from the auth context
+	const { signIn } = useAuth();
+
+	// Handle sign-in form submission event
 	const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setPending(true);
 
+		// Get form data
 		const formData = new FormData(e.currentTarget);
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
 
 		try {
-			const response = await fetch('/api/auth/sign-in', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ email, password }),
-			});
-
-			if (!response.ok) throw new Error('Failed to sign in');
-
-			const data = await response.json();
-
-			if (data.session) {
-				await supabase.auth.setSession(data.session);
-			}
-
-			router.push('/dashboard');
+			// Sign in with email and password
+			await signIn(email, password, '/dashboard');
 		} catch (error) {
-			if (error instanceof Error) {
-				alert(error.message);
-			} else {
-				alert('An unknown error occurred');
-			}
+			// Handle sign-in error and show alert
+			console.error('Error signing in:', error);
+			alert('Invalid username or password. Please try again.');
 			setPending(false);
 		}
 	};
@@ -58,6 +45,7 @@ export default function SignInPage() {
 					</Link>
 				</div>
 			</header>
+
 			{/* Background Visuals */}
 			<div className="absolute inset-0 z-0">
 				{/* Floating Circle */}
@@ -93,6 +81,7 @@ export default function SignInPage() {
 							id="email"
 							name="email"
 							type="email"
+							onChange={(e) => setEmail(e.target.value)}
 							placeholder="you@example.com"
 							className="w-full p-3 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
 							required
@@ -114,6 +103,7 @@ export default function SignInPage() {
 							id="password"
 							name="password"
 							type="password"
+							onChange={(e) => setPassword(e.target.value)}
 							placeholder="Your password"
 							className="w-full p-3 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
 							required
