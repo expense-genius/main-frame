@@ -27,7 +27,6 @@ export async function fetchTransactions() {
     if (!response.ok) throw new Error("Failed to fetch transactions");
 
     const transactions = await response.json();
-    console.log("transactions", transactions);
     return transactions;
   } catch (err) {
     console.error("Error fetching transactions:", err);
