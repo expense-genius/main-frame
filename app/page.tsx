@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/authContext';
-import { BasicButton, TruckAnimation } from '@/components/common';
+import { BasicButton, TruckAnimation, EGLogo } from '@/components/common';
 
 export default function Home() {
 	const { user } = useAuth();
@@ -57,7 +57,7 @@ export default function Home() {
 			<header className="absolute top-0 left-0 w-full flex justify-between items-center p-6 z-50">
 				<div className="flex items-center">
 					<Link href="/">
-						<span className="text-xl font-bold text-gray-800">Expense Genius Logo</span>
+						<EGLogo />
 					</Link>
 				</div>
 				<div className="flex items-center gap-4 sm:gap-4 sm:flex-row flex-col">

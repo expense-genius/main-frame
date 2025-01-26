@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { EGLogo } from '@/components/common';
 import { SubmitButton } from '@/components/submit-button';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/authContext';
@@ -41,7 +42,7 @@ export default function SignInPage() {
 			<header className="absolute top-0 left-0 w-full flex justify-between items-center p-6 z-50">
 				<div className="flex items-center">
 					<Link href="/">
-						<span className="text-xl font-bold text-gray-800">Expense Genius Logo</span>
+						<EGLogo />
 					</Link>
 				</div>
 			</header>

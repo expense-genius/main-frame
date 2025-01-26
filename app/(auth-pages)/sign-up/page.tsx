@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/authContext';
+import { EGLogo } from '@/components/common';
 
 export default function Signup() {
 	const { signup } = useAuth();
@@ -13,7 +14,7 @@ export default function Signup() {
 			<header className="absolute top-0 left-0 w-full flex justify-between items-center p-6 z-50">
 				<div className="flex items-center">
 					<Link href="/">
-						<span className="text-xl font-bold text-gray-800">Expense Genius Logo</span>
+						<EGLogo />
 					</Link>
 				</div>
 			</header>
